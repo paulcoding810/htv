@@ -49,6 +49,13 @@ class HWebViewClient(private val site: Site, private val adsBlackList: List<Stri
             }
         }
 
+        for (key in site.urlBlocks ?: emptyList()) {
+            if (request?.url.toString().contains(key)) {
+                log("Blocking $key")
+                return true
+            }
+        }
+
         return super.shouldOverrideUrlLoading(webview, request)
     }
 

@@ -12,6 +12,7 @@ data class Config(
 data class Site(
     val baseUrl: String,
     val cssBlocks: List<String>? = emptyList(),
+    val urlBlocks: List<String>? = emptyList(),
     val intercepts: List<List<String>>? = emptyList(),
     val name: String,
     val startupScripts: List<String>? = emptyList()
