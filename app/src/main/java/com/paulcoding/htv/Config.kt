@@ -11,13 +11,13 @@ data class Config(
 
 data class Site(
     val baseUrl: String,
-    val cssBlocks: List<String>,
-    val intercepts: List<List<String>>,
+    val cssBlocks: List<String>? = emptyList(),
+    val intercepts: List<List<String>>? = emptyList(),
     val name: String,
-    val startupScripts: List<String>
+    val startupScripts: List<String>? = emptyList()
 ) {
     val interceptMap: Map<String, String>
-        get() = intercepts.associate {
+        get() = if (intercepts.isNullOrEmpty()) emptyMap() else intercepts.associate {
             it[0] to it[1]
         }
 }

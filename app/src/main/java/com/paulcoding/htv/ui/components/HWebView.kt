@@ -44,7 +44,7 @@ class HWebViewClient(private val site: Site, private val adsBlackList: List<Stri
     ): Boolean {
         for (key in adsBlackList) {
             if (request?.url.toString().contains(key)) {
-                log("Blocking $key", "HWebViewClient")
+                log("Blocking $key")
                 return true
             }
         }
@@ -55,7 +55,7 @@ class HWebViewClient(private val site: Site, private val adsBlackList: List<Stri
     override fun onPageFinished(webview: WebView, url: String?) {
         super.onPageFinished(webview, url)
 
-        if (site.cssBlocks.isNotEmpty()) {
+        if (!site.cssBlocks.isNullOrEmpty()) {
             val js = getInjectCssScript(site.cssBlocks)
             webview.evaluateJavascript(js, null)
         }
@@ -63,7 +63,7 @@ class HWebViewClient(private val site: Site, private val adsBlackList: List<Stri
 
     override fun onPageStarted(webview: WebView, url: String?, favicon: Bitmap?) {
         super.onPageStarted(webview, url, favicon)
-        site.startupScripts.forEach {
+        site.startupScripts?.forEach {
             val js = loadScriptFile(webview.context, filePath = it)
             webview.evaluateJavascript(js, null)
         }
