@@ -66,6 +66,12 @@ class HWebViewClient(private val site: Site, private val adsBlackList: List<Stri
             val js = getInjectCssScript(site.cssBlocks)
             webview.evaluateJavascript(js, null)
         }
+
+        site.onLoadedScripts?.forEach {
+            val js = loadScriptFile(webview.context, filePath = it)
+            log("Loading $it")
+            webview.evaluateJavascript(js, null)
+        }
     }
 
     override fun onPageStarted(webview: WebView, url: String?, favicon: Bitmap?) {

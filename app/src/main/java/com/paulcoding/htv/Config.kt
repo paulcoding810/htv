@@ -15,7 +15,8 @@ data class Site(
     val urlBlocks: List<String>? = emptyList(),
     val intercepts: List<List<String>>? = emptyList(),
     val name: String,
-    val startupScripts: List<String>? = emptyList()
+    val startupScripts: List<String>? = emptyList(),
+    val onLoadedScripts: List<String>? = emptyList()
 ) {
     val interceptMap: Map<String, String>
         get() = if (intercepts.isNullOrEmpty()) emptyMap() else intercepts.associate {
