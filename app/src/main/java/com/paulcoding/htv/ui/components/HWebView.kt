@@ -28,6 +28,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -83,6 +84,18 @@ fun HWebView(
 
             }
             loadUrl(site.baseUrl)
+        }
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            webView.apply {
+                // the WebView must be removed from the view hierarchy before calling destroy
+                // to prevent a memory leak
+                removeAllViews()
+                webChromeClient = null
+                destroy()
+            }
         }
     }
 
