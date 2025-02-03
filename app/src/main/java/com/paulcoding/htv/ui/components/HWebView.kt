@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Home
@@ -112,6 +113,11 @@ fun HWebView(
                     "Forward",
                     tint = if (canGoForward) Color.White else Color.Gray
                 )
+            }
+            IconButton(onClick = {
+                webView.scrollTo(0, 0)
+            }) {
+                Icon(Icons.Filled.ArrowUpward, "Top")
             }
         }
     }
