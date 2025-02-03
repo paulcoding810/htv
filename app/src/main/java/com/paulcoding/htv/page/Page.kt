@@ -19,14 +19,14 @@ import androidx.compose.ui.graphics.vector.ImageVector
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Page(
-    title: String,
+    title: String? = null,
     icon: ImageVector = Icons.AutoMirrored.Filled.ArrowBack,
     goBack: (() -> Unit)? = null,
     actions: @Composable (RowScope.() -> Unit) = {},
     content: @Composable () -> Unit
 ) {
     Scaffold(topBar = {
-        TopAppBar(title = {
+        if (title != null) TopAppBar(title = {
             Text(text = title)
         }, navigationIcon = {
             if (goBack != null)

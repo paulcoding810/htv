@@ -15,7 +15,13 @@ fun WebPage(navController: NavHostController, viewModel: HTVViewModel) {
     val state by viewModel.stateFlow.collectAsState()
     val site = state.selectedSite ?: return
 
-    Page(title = "Web", goBack = { navController.popBackStack() }) {
-        HWebView(modifier = Modifier.fillMaxSize(), site = site, adsBlackList = state.adsBlackList)
+    Page {
+        HWebView(
+            modifier = Modifier.fillMaxSize(),
+            site = site,
+            adsBlackList = state.adsBlackList
+        ) {
+            navController.popBackStack()
+        }
     }
 }
