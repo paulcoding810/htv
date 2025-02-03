@@ -3,6 +3,7 @@ package com.paulcoding.htv.ui.components
 import android.annotation.SuppressLint
 import android.webkit.WebChromeClient
 import android.webkit.WebView
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -67,6 +68,10 @@ fun HWebView(
             }
             loadUrl(site.baseUrl)
         }
+    }
+
+    BackHandler(enabled = canGoBack) {
+        webView.goBack()
     }
 
     Column(modifier = modifier) {
