@@ -138,7 +138,7 @@ fun HWebView(
                 Icon(
                     Icons.Filled.ChevronLeft,
                     "Back",
-                    tint = if (canGoBack) Color.White else Color.Gray
+                    tint = if (canGoBack) Color.Black else Color.Gray
                 )
             }
             IconButton(onClick = {
@@ -147,7 +147,7 @@ fun HWebView(
                 Icon(
                     Icons.Filled.ChevronRight,
                     "Forward",
-                    tint = if (canGoForward) Color.White else Color.Gray
+                    tint = if (canGoForward) Color.Black else Color.Gray
                 )
             }
             IconButton(onClick = {
