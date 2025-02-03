@@ -1,6 +1,9 @@
 package com.paulcoding.htv.ui.components
 
 import android.annotation.SuppressLint
+import android.content.Intent
+import android.net.Uri
+import android.webkit.JavascriptInterface
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import androidx.activity.compose.BackHandler
@@ -9,23 +12,31 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Http
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -62,10 +73,12 @@ fun HWebView(
     val pullRefreshState = rememberPullRefreshState(isRefreshing, {
         isRefreshing = true
     })
+    var dropdownExpanded by remember { mutableStateOf(false) }
 
     val webView = remember {
         WebView(context).apply {
             settings.javaScriptEnabled = true
+            addJavascriptInterface(JSInterface(this), "Android")
             webViewClient = HWebViewClient(site, adsBlackList) { webview ->
                 canGoBack = webview.canGoBack()
                 canGoForward = webview.canGoForward()
@@ -123,9 +136,51 @@ fun HWebView(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp)
-                .padding(8.dp)
+                .padding(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(pageTitle, fontSize = 12.sp, maxLines = 1)
+            Text(pageTitle, fontSize = 12.sp, maxLines = 1, modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.width(16.dp))
+            Box {
+                val dropdownItemColors = MenuDefaults.itemColors(
+                    leadingIconColor = MaterialTheme.colorScheme.primary,
+                    textColor = MaterialTheme.colorScheme.primary,
+                )
+                IconButton(onClick = {
+                    dropdownExpanded = true
+                }) {
+                    Icon(Icons.Filled.MoreVert, "More", tint = Color.Black)
+                }
+                DropdownMenu(
+                    expanded = dropdownExpanded,
+                    onDismissRequest = { dropdownExpanded = false },
+                ) {
+                    DropdownMenuItem(
+                        colors = dropdownItemColors,
+                        onClick = {
+                            webView.loadUrl("javascript:window.Android.sendHtml(document.documentElement.outerHTML);")
+                            dropdownExpanded = false
+                        },
+                        text = { Text("Html") },
+                        leadingIcon = {
+                            Icon(Icons.Filled.Code, "Html")
+                        }
+                    )
+                    DropdownMenuItem(
+                        colors = dropdownItemColors,
+                        onClick = {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(webView.url))
+                            context.startActivity(intent)
+                            dropdownExpanded = false
+                        },
+                        text = { Text("Open in browser") },
+                        leadingIcon = {
+                            Icon(Icons.Filled.Http, "Open in browser")
+                        }
+                    )
+                }
+            }
         }
         AndroidView(
             modifier = Modifier.weight(1f),
@@ -174,5 +229,13 @@ fun HWebView(
                 Icon(Icons.Filled.ArrowUpward, "Top")
             }
         }
+    }
+}
+
+
+class JSInterface(private val webView: WebView) {
+    @JavascriptInterface
+    fun sendHtml(html: String) {
+        println("HTML Content: $html")
     }
 }
