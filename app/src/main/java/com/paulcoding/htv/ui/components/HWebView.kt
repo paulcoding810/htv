@@ -6,21 +6,30 @@ import android.webkit.WebView
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -33,7 +42,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.paulcoding.htv.Site
 
-
+@OptIn(ExperimentalMaterialApi::class)
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
 fun HWebView(
@@ -47,6 +56,11 @@ fun HWebView(
     var pageTitle by remember { mutableStateOf("") }
     var canGoBack by remember { mutableStateOf(false) }
     var canGoForward by remember { mutableStateOf(false) }
+    var isRefreshing by remember { mutableStateOf(false) }
+    var progress by remember { mutableIntStateOf(0) }
+    val pullRefreshState = rememberPullRefreshState(isRefreshing, {
+        isRefreshing = true
+    })
 
     val webView = remember {
         WebView(context).apply {
@@ -58,6 +72,8 @@ fun HWebView(
             webChromeClient = object : WebChromeClient() {
                 override fun onProgressChanged(view: WebView, newProgress: Int) {
                     super.onProgressChanged(view, newProgress)
+                    progress = newProgress
+                    isRefreshing = newProgress < 100
                 }
 
                 override fun onReceivedTitle(view: WebView?, title: String?) {
@@ -74,7 +90,22 @@ fun HWebView(
         webView.goBack()
     }
 
-    Column(modifier = modifier) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .pullRefresh(state = pullRefreshState)
+    ) {
+        ProgressIndicator(progress)
+        PullRefreshIndicator(
+            isRefreshing,
+            pullRefreshState,
+            Modifier.align(Alignment.TopCenter),
+            contentColor = MaterialTheme.colorScheme.primary,
+            backgroundColor = MaterialTheme.colorScheme.background
+        )
+    }
+
+    Column(modifier = modifier.fillMaxSize()) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -118,6 +149,11 @@ fun HWebView(
                     "Forward",
                     tint = if (canGoForward) Color.White else Color.Gray
                 )
+            }
+            IconButton(onClick = {
+                webView.reload()
+            }) {
+                Icon(Icons.Filled.Refresh, "Refresh")
             }
             IconButton(onClick = {
                 webView.scrollTo(0, 0)
