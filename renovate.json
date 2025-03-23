@@ -1,0 +1,28 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:base"
+  ],
+  "automerge": true,
+  "automergeType": "pr",
+  "automergeStrategy": "squash",
+  "labels": [
+    "dependencies"
+  ],
+  "packageRules": [
+    {
+      "matchManagers": [
+        "gradle"
+      ],
+      "groupName": "Gradle Dependencies",
+      "matchUpdateTypes": [
+        "minor",
+        "patch",
+        "pin",
+        "digest"
+      ],
+      "automerge": true
+    }
+  ],
+  "platformAutomerge": false
+}
